@@ -3,7 +3,7 @@ import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import Home from './Components/Home';
 import Register from './Components/Register';
-import { Login } from '@mui/icons-material';
+import Login from './Components/Login';
 
 function App() {
   const [user, setUser] = useState(getUserToken())

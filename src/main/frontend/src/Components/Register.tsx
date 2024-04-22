@@ -1,112 +1,101 @@
+import React, { useState, useEffect } from 'react';
 import { Alert, Box, Button, TextField } from '@mui/material';
 import axios from 'axios';
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
+import './Register.css'; 
+import todoLogo from '../images/todo-logo.png';
 
 const SIGNUP_TOKEN_URL = "http://localhost:8080/register";
 
-const Register = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+const Register: React.FC = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-  const [validUsername, setValidUsername] = useState(true)
-  const [validPassword, setValidPassword] = useState(true)
+  const [validUsername, setValidUsername] = useState(true);
+  const [validPassword, setValidPassword] = useState(true);
 
-  const [signupButtonClicked, setSignupButtonClicked] = useState(false)
+  const [signupButtonClicked, setSignupButtonClicked] = useState(false);
 
-  const [signupError, setSignupError] = useState('')
-  const [responseMsg, setResponseMsg] = useState('')
+  const [signupError, setSignupError] = useState('');
+  const [responseMsg, setResponseMsg] = useState('');
 
-  const [successAlert, setSuccessAlert] = useState(false)
-  const [errorAlert, setErrorAlert] = useState(false)
-
-  const trueSA = () => {
-    setSuccessAlert(true)
-  }
-
-  const falseSA = () => {
-    setSuccessAlert(false)
-  }
-
-  const trueEA = () => {
-    setErrorAlert(true)
-  }
-
-  const falseEA = () => {
-    setErrorAlert(false)
-  }
+  const [successAlert, setSuccessAlert] = useState(false);
+  const [errorAlert, setErrorAlert] = useState(false);
 
   useEffect(() => {
-    setValidUsername(username.length > 0)
-    setValidPassword(password.length > 0)
-  }, [username, password])
+    setValidUsername(username.length > 0);
+    setValidPassword(password.length > 0);
+  }, [username, password]);
 
-  function signup(e: any) {
-    falseSA()
-    falseEA()
-    e.preventDefault()
-    setSignupButtonClicked(true)
+  function signup(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSignupButtonClicked(true);
     if (!validUsername || !validPassword) {
-      return
+      setSignupButtonClicked(false);
+      return;
     }
 
-    const signupBody = {
-      username: username,
-      password: password
-    }
-
-    axios.post(SIGNUP_TOKEN_URL, signupBody)
+    axios.post(SIGNUP_TOKEN_URL, { username, password })
       .then(response => {
-        setResponseMsg(response.data)
-        trueSA()
+        setResponseMsg(response.data);
+        setSuccessAlert(true);
       })
       .catch(error => {
-        try {
-          setSignupError(error.response.data)
-          trueEA()
-        } catch (e) {
-          setSignupError("Cannot access registration server!")
-        }
+        const errorMessage = error.response?.data || "Cannot access registration server!";
+        setSignupError(errorMessage);
+        setErrorAlert(true);
+      })
+      .finally(() => {
+        setSignupButtonClicked(false);
       });
-    setSignupButtonClicked(false)
   }
 
   return (
-    <div>
-      <h2>Please sign up</h2>
-      <form onSubmit={signup}>
-        <Box>
-          <TextField label='Username' onChange={e => setUsername(e.target.value)} />
+    <div className="register-page">
+      <div className="form-container">
+        <Box className="register-container">
+          <h2>Please sign up</h2>
+          <form onSubmit={signup}>
+            <TextField 
+              fullWidth
+              label='Username' 
+              margin="normal" 
+              onChange={e => setUsername(e.target.value)} 
+              error={!validUsername && signupButtonClicked}
+              helperText={!validUsername && signupButtonClicked ? "Username is required" : ""}
+            />
+
+            <TextField 
+              fullWidth
+              label='Password' 
+              type='password' 
+              margin="normal" 
+              onChange={e => setPassword(e.target.value)} 
+              error={!validPassword && signupButtonClicked}
+              helperText={!validPassword && signupButtonClicked ? "Password is required" : ""}
+            />
+
+            <Button 
+              fullWidth
+              type='submit' 
+              variant='contained' 
+              sx={{ marginTop: 2 }}
+              disabled={signupButtonClicked}>
+              Sign up
+            </Button>
+
+            {successAlert && <Alert severity='success'>{responseMsg}</Alert>}
+            {errorAlert && <Alert severity='error'>{signupError}</Alert>}
+          </form>
+          <h3>OR</h3>
+          <Link to={'/login'}>Log in</Link>
         </Box>
-        {!validUsername && signupButtonClicked ? (
-          <Alert variant='standard' severity='error'>Username is required</Alert>
-        ) : (
-          <></>
-        )}
-
-        <Box>
-          <TextField label='Password' type='password' onChange={e => setPassword(e.target.value)} />
-        </Box>
-        {!validPassword && signupButtonClicked ? (
-          <Alert variant='standard' severity='error'>Password is required</Alert>
-        ) : (
-          <></>
-        )}
-
-        <Box>
-          <Button type='submit' variant='contained'>
-            Sign up
-          </Button>
-        </Box>
-
-      </form>
-      <h3>OR</h3>
-      <Link to={'/'}>Log in</Link>
-
-      {successAlert && <Alert variant='standard' severity='success'>{responseMsg}</Alert>}
-      {errorAlert && <Alert variant='standard' severity='error'>{signupError}</Alert>}
+      </div>
+      <div className="logo-container">
+        <img src={todoLogo} alt="ToDo Logo" className="logo" />
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;
