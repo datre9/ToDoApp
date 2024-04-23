@@ -10,9 +10,11 @@ const SIGNUP_TOKEN_URL = "http://localhost:8080/register";
 const Register: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const [validUsername, setValidUsername] = useState(true);
-  const [validPassword, setValidPassword] = useState(true);
+  const [validUsername, setValidUsername] = useState(false);
+  const [validPassword, setValidPassword] = useState(false);
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
 
   const [signupButtonClicked, setSignupButtonClicked] = useState(false);
 
@@ -24,14 +26,17 @@ const Register: React.FC = () => {
 
   useEffect(() => {
     setValidUsername(username.length > 0);
-    setValidPassword(password.length > 0);
-  }, [username, password]);
+    setValidPassword(password.length > 0 && password === confirmPassword);
+    setPasswordsMatch(password === confirmPassword);
+  }, [username, password, confirmPassword]);
 
   function signup(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSignupButtonClicked(true);
-    if (!validUsername || !validPassword) {
+    if (!validUsername || !validPassword || !passwordsMatch) {
       setSignupButtonClicked(false);
+      setErrorAlert(true); // Set error alert if validation fails
+      setSignupError('Please correct passwords. Passwords do not match!');
       return;
     }
 
@@ -39,14 +44,12 @@ const Register: React.FC = () => {
       .then(response => {
         setResponseMsg(response.data);
         setSuccessAlert(true);
+        setSignupButtonClicked(false);
       })
       .catch(error => {
         const errorMessage = error.response?.data || "Cannot access registration server!";
         setSignupError(errorMessage);
         setErrorAlert(true);
-      })
-      .finally(() => {
-        setSignupButtonClicked(false);
       });
   }
 
@@ -73,6 +76,16 @@ const Register: React.FC = () => {
               onChange={e => setPassword(e.target.value)} 
               error={!validPassword && signupButtonClicked}
               helperText={!validPassword && signupButtonClicked ? "Password is required" : ""}
+            />
+
+            <TextField 
+              fullWidth
+              label='Confirm Password' 
+              type='password' 
+              margin="normal" 
+              onChange={e => setConfirmPassword(e.target.value)} 
+              error={!passwordsMatch && signupButtonClicked}
+              helperText={!passwordsMatch && signupButtonClicked ? "Passwords do not match" : ""}
             />
 
             <Button 
