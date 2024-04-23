@@ -33,6 +33,8 @@ public class Item {
 
     private String description;
 
+    private boolean completed;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Importance importance;

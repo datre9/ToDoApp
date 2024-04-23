@@ -15,4 +15,5 @@ public class ItemForm {
     private LocalDateTime time;
     private String description;
     private Importance importance;
+    private boolean completed;
 }
