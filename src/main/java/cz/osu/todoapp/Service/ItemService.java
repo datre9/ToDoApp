@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -38,6 +39,16 @@ public class ItemService {
         }
         catch (Exception e) {
             return new ResponseEntity<>("Incorrect item information or format", HttpStatus.CONFLICT);
+        }
+    }
+
+    public ResponseEntity<Object> getAllForUser(String userID) {
+        List<Item> items = itemRepo.findByUserIdOrderByTimeAsc(userID);
+
+        if (items.isEmpty()) {
+            return new ResponseEntity<>("User has no items or does not exist", HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(items, HttpStatus.OK);
         }
     }
 }

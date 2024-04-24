@@ -3,10 +3,7 @@ package cz.osu.todoapp.Controller;
 import cz.osu.todoapp.Model.json.ItemForm;
 import cz.osu.todoapp.Service.ItemService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin
@@ -18,5 +15,10 @@ public class ItemController {
     @PostMapping("/create")
     public ResponseEntity<String> create(@RequestBody ItemForm itemDTO) {
         return itemService.create(itemDTO);
+    }
+
+    @GetMapping("/getall")
+    public ResponseEntity<Object> getAll(@RequestBody String userId) {
+        return itemService.getAllForUser(userId);
     }
 }

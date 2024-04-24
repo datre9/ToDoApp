@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ItemRepo extends CrudRepository<Item, String> {
-    List<Item> findAllByUserIdOrderByTimeAsc(String userId);
+    List<Item> findByUserIdOrderByTimeAsc(String userId);
 }
