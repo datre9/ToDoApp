@@ -2,6 +2,7 @@ package cz.osu.todoapp.Service;
 
 import cz.osu.todoapp.Model.db.Item;
 import cz.osu.todoapp.Model.enums.Importance;
+import cz.osu.todoapp.Model.json.ItemEditForm;
 import cz.osu.todoapp.Model.json.ItemForm;
 import cz.osu.todoapp.Model.repo.ItemRepo;
 import jakarta.transaction.Transactional;
@@ -50,5 +51,38 @@ public class ItemService {
         } else {
             return new ResponseEntity<>(items, HttpStatus.OK);
         }
+    }
+
+    public ResponseEntity<String> delete(String itemID) {
+        ResponseEntity<String> ret;
+
+        if (itemRepo.existsById(itemID)) {
+            itemRepo.deleteById(itemID);
+
+            ret = new ResponseEntity<>("Item deleted successfully", HttpStatus.OK);
+        } else {
+            ret = new ResponseEntity<>("Item not found", HttpStatus.NOT_FOUND);
+        }
+        return ret;
+    }
+
+    public ResponseEntity<String> update(ItemEditForm itemDTO) {
+        ResponseEntity<String> ret;
+        if (itemRepo.existsById(itemDTO.getItemID())) {
+            Item item = itemRepo.findById(itemDTO.getItemID()).get();
+
+            item.setTitle(itemDTO.getTitle());
+            LocalDateTime time = LocalDateTime.parse(itemDTO.getTime());
+            item.setTime(time);
+            item.setDescription(itemDTO.getDescription());
+            item.setCompleted(false);
+            item.setImportance(Importance.valueOf(itemDTO.getImportance()));
+
+            itemRepo.save(item);
+            ret = new ResponseEntity<>("Item updated successfully", HttpStatus.OK);
+        } else {
+            ret = new ResponseEntity<>("Item not found", HttpStatus.NOT_FOUND);
+        }
+        return ret;
     }
 }
