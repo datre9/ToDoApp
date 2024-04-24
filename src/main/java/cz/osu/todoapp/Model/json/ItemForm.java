@@ -5,15 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemForm {
+    private String userID;
     private String title;
-    private LocalDateTime time;
+    private String time;
     private String description;
-    private Importance importance;
-    private boolean completed;
+    private String importance;
 }
