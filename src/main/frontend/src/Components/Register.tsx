@@ -31,6 +31,8 @@ const Register: React.FC = () => {
   }, [username, password, confirmPassword]);
 
   function signup(e: React.FormEvent<HTMLFormElement>) {
+    setErrorAlert(false)
+    setSuccessAlert(false)
     e.preventDefault();
     setSignupButtonClicked(true);
     if (!validUsername || !validPassword || !passwordsMatch) {
