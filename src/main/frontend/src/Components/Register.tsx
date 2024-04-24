@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Alert, Box, Button, TextField } from '@mui/material';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import './Register.css'; 
+import './Register.css';
 import todoLogo from '../images/todo-logo.png';
+import { format } from 'date-fns'; 
+import FlyingTodo from "./FlyingTodo";
+
 
 const SIGNUP_TOKEN_URL = "http://localhost:8080/register";
 
@@ -11,6 +14,7 @@ const Register: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [currentTime, setCurrentTime] = useState(new Date()); 
 
   const [validUsername, setValidUsername] = useState(false);
   const [validPassword, setValidPassword] = useState(false);
@@ -28,16 +32,22 @@ const Register: React.FC = () => {
     setValidUsername(username.length > 0);
     setValidPassword(password.length > 0 && password === confirmPassword);
     setPasswordsMatch(password === confirmPassword);
+
+    const timerId = setInterval(() => {
+      setCurrentTime(new Date()); 
+    }, 1000);
+
+    return () => clearInterval(timerId); 
   }, [username, password, confirmPassword]);
 
   function signup(e: React.FormEvent<HTMLFormElement>) {
-    setErrorAlert(false)
-    setSuccessAlert(false)
+    setErrorAlert(false);
+    setSuccessAlert(false);
     e.preventDefault();
     setSignupButtonClicked(true);
     if (!validUsername || !validPassword || !passwordsMatch) {
       setSignupButtonClicked(false);
-      setErrorAlert(true); // Set error alert if validation fails
+      setErrorAlert(true);
       setSignupError('Please correct passwords. Passwords do not match!');
       return;
     }
@@ -56,10 +66,18 @@ const Register: React.FC = () => {
   }
 
   return (
-    <div className="register-page">
+       <div className="register-page">
+      <FlyingTodo /> {}
+      <header className="header">
+        <div className="logo-container">
+          <img src={todoLogo} alt="ToDo Logo" className="logo" />
+        </div>
+        <div className="header-title">ToDo App</div>
+        <div className="time-display">{format(currentTime, 'PPpp')}</div>
+      </header>
       <div className="form-container">
         <Box className="register-container">
-          <h2>Please sign up</h2>
+          <h2>PLEASE SIGN UP</h2>
           <form onSubmit={signup}>
             <TextField 
               fullWidth
@@ -94,7 +112,19 @@ const Register: React.FC = () => {
               fullWidth
               type='submit' 
               variant='contained' 
-              sx={{ marginTop: 2 }}
+              
+              sx={{
+                marginTop: 2,
+                backgroundColor: '#1959b3', 
+                color: 'white', 
+                ':hover': {
+                  backgroundColor: '#303f9f' 
+                },
+                disabled: {
+                  backgroundColor: '#ccc', 
+                  color: '#666'
+                }
+              }}
               disabled={signupButtonClicked}>
               Sign up
             </Button>
@@ -103,11 +133,24 @@ const Register: React.FC = () => {
             {errorAlert && <Alert severity='error'>{signupError}</Alert>}
           </form>
           <h3>OR</h3>
-          <Link to={'/login'}>Log in</Link>
+          <Button
+          component={Link} 
+          to="/login" 
+          variant="contained" 
+          fullWidth
+          sx={{
+            marginTop: 2,
+            backgroundColor: '#1959b3', 
+            color: 'white', 
+            ':hover': {
+              backgroundColor: '#303f9f' 
+            }
+          }}> 
+          Log in
+        </Button>
         </Box>
       </div>
       <div className="logo-container">
-        <img src={todoLogo} alt="ToDo Logo" className="logo" />
       </div>
     </div>
   );
