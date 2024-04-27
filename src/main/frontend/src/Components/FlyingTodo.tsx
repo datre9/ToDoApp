@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-const headerHeight = 130; 
-
-const FlyingTodo = () => {
-  const [position, setPosition] = useState({
-    top: headerHeight + 10,  
-    left: 50  
-  });
+interface FlyingTodoProps {
+  initialTop: number;
+  initialLeft: number;
+  headerHeight: number;
+  formRef: React.RefObject<HTMLDivElement>;
+}
+const FlyingTodo: React.FC<FlyingTodoProps> = ({ initialTop, initialLeft, headerHeight, formRef }) => {
+  const [position, setPosition] = useState({ top: initialTop, left: initialLeft });
   const [velocity, setVelocity] = useState({
-    x: (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 2), 
-    y: (Math.random() > 0.5 ? 1 : -1) * (2 + Math.random() * 2)  
+    x: (Math.random() > 0.5 ? 1 : -1) * (1 + Math.random()), 
+    y: (Math.random() > 0.5 ? 1 : -1) * (1 + Math.random())
   });
+
+  const todoWidth = 50; // Předpokládá se, že šířka ToDo je 50px
+  const todoHeight = 20; // Předpokládá se, že výška ToDo je 20px
+  const [color] = useState(`hsl(${Math.random() * 360}, 100%, 50%)`);
 
   useEffect(() => {
     const move = () => {
@@ -18,26 +23,27 @@ const FlyingTodo = () => {
         let newTop = prevPosition.top + velocity.y;
         let newLeft = prevPosition.left + velocity.x;
 
-        // Kontrola kolize s okraji obrazovky a hlavičkou
-        let newVelocity = { ...velocity };
-        if (newTop <= headerHeight || newTop >= window.innerHeight - 20) {
-          newTop = prevPosition.top; // Zůstává na původní pozici při kolizi
-          newVelocity.y = -velocity.y; // Invertujeme Y směr
+        const formBounds = formRef.current?.getBoundingClientRect();
+        if (formBounds) {
+          if (newTop <= headerHeight || newTop + todoHeight >= window.innerHeight || 
+              (newTop + todoHeight >= formBounds.top && newTop <= formBounds.bottom &&
+               newLeft + todoWidth >= formBounds.left && newLeft <= formBounds.right)) {
+            velocity.y = -velocity.y;
+          }
+          if (newLeft <= 0 || newLeft + todoWidth >= window.innerWidth || 
+              (newLeft + todoWidth >= formBounds.left && newLeft <= formBounds.right &&
+               newTop + todoHeight >= formBounds.top && newTop <= formBounds.bottom)) {
+            velocity.x = -velocity.x;
+          }
         }
-        if (newLeft <= 0 || newLeft >= window.innerWidth - 20) {
-          newLeft = prevPosition.left; // Zůstává na původní pozici při kolizi
-          newVelocity.x = -velocity.x; // Invertujeme X směr
-        }
-        setVelocity(newVelocity); // Aktualizace rychlosti pro další pohyb
 
         return { top: newTop, left: newLeft };
       });
     };
 
-    const intervalId = setInterval(move, 20); // Zrychlujeme interval pro hladší pohyb
-
+    const intervalId = setInterval(move, 30);
     return () => clearInterval(intervalId);
-  }, [velocity]); // Závislost na velocity zajistí reakci na jeho změny
+  }, [velocity, headerHeight, formRef]);
 
   return (
     <div style={{
@@ -45,7 +51,7 @@ const FlyingTodo = () => {
       top: `${position.top}px`,
       left: `${position.left}px`,
       fontWeight: 'bold',
-      color: 'blue',
+      color: color,
     }}>
       ToDo
     </div>

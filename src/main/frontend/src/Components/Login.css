@@ -1,0 +1,66 @@
+.register-page {
+    background-color: whitesmoke; 
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    height: 100vh;
+    justify-content: flex-start; 
+  }
+
+  .header {
+    width: 100%;
+    background-color: whitesmoke;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    padding: 10px 20px;
+  }
+  
+  .logo-container {
+    flex: 1; 
+  }
+  
+  .header-title {
+    flex: 2; 
+    text-align: center;
+    font-size: 60px;
+    text-shadow: 2px 2px 2px rgba(0,0,0,0.99);
+  
+  }
+  
+  .logo {
+    max-width: 110px; 
+    height: auto;
+    border-radius: 10px;
+  }
+  
+  .form-container {
+    width: 100%; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 160px; 
+  }
+  
+  .register-container {
+    padding: 20px;
+    border-radius: 10px;
+    background: white;
+    width: 100%;
+    max-width: 400px; 
+  }
+  h3 {
+    font-weight: normal; 
+    font-size: 0.9em;
+    color: #020000;
+    margin: 10px 0; 
+  }
+  .time-display {
+    flex: 1;
+    text-align: right;
+    font-size: 18px;
+  
+    
+  }
+  

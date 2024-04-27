@@ -80,7 +80,6 @@ const Login = (props: any) => {
           <Alert variant='standard' severity='error'>Password is incorrect</Alert>) : (
           <></>
         )}
-
         <Box>
           <Button type='submit' variant='contained'>Log in</Button>
         </Box>
