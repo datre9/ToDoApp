@@ -4,6 +4,7 @@ import cz.osu.todoapp.Model.db.Item;
 import cz.osu.todoapp.Model.enums.Importance;
 import cz.osu.todoapp.Model.json.ItemEditForm;
 import cz.osu.todoapp.Model.json.ItemForm;
+import cz.osu.todoapp.Model.json.ItemToken;
 import cz.osu.todoapp.Model.repo.ItemRepo;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -43,21 +44,21 @@ public class ItemService {
         }
     }
 
-    public ResponseEntity<Object> getAllForUser(String userID) {
-        List<Item> items = itemRepo.findByUserIdOrderByTimeAsc(userID);
+    public ResponseEntity<Object> getAllForUser(ItemToken userID) {
+        List<Item> items = itemRepo.findByUserIdOrderByTimeAsc(userID.getUserId());
 
         if (items.isEmpty()) {
-            return new ResponseEntity<>("User has no items or does not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("User " + userID.getUserId() + " has no items or does not exist", HttpStatus.NOT_FOUND);
         } else {
             return new ResponseEntity<>(items, HttpStatus.OK);
         }
     }
 
-    public ResponseEntity<String> delete(String itemID) {
+    public ResponseEntity<String> delete(ItemToken itemID) {
         ResponseEntity<String> ret;
 
-        if (itemRepo.existsById(itemID)) {
-            itemRepo.deleteById(itemID);
+        if (itemRepo.existsById(itemID.getUserId())) {
+            itemRepo.deleteById(itemID.getUserId());
 
             ret = new ResponseEntity<>("Item deleted successfully", HttpStatus.OK);
         } else {
