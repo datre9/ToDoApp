@@ -48,7 +48,7 @@ public class ItemService {
         List<Item> items = itemRepo.findByUserIdOrderByTimeAsc(userID.getUserId());
 
         if (items.isEmpty()) {
-            return new ResponseEntity<>("User " + userID.getUserId() + " has no items or does not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("User " + userID.getUserId() + " has no items or does not exist", HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
             return new ResponseEntity<>(items, HttpStatus.OK);
         }

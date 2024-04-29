@@ -16,6 +16,7 @@ import dayjs from 'dayjs'
 
 const GETALL_TOKEN_URL = "http://localhost:8080/getall"
 const CREATE_TOKEN_URL = "http://localhost:8080/create"
+const DELETE_TOKEN_URL = "http://localhost:8080/delete"
 
 interface Item {
   itemId: string
@@ -68,13 +69,26 @@ const ItemTable = (props: any) => {
     }
 
     axios.post(CREATE_TOKEN_URL, itemToCreate)
-    .then(res => {
-      console.log(res)
-      axios.post(GETALL_TOKEN_URL, { userId: userID })
-        .then(res => setItems(res.data))
-        .catch(err => console.log(err))
-    })
-    .catch(err => console.log(err))
+      .then(res => {
+        console.log(res)
+        axios.post(GETALL_TOKEN_URL, { userId: userID })
+          .then(res => setItems(res.data))
+          .catch(err => console.log(err))
+      })
+      .catch(err => console.log(err))
+  }
+
+  function del(e: any) {
+    axios.post(DELETE_TOKEN_URL, { userId: e })
+      .then(res => {
+        console.log(res)
+        axios.post(GETALL_TOKEN_URL, { userId: userID })
+          .then(res => setItems(res.data))
+          .catch(err => {console.log(err)
+              setItems([])
+          })
+      })
+      .catch(err => console.log(err))
   }
 
   return (
@@ -101,6 +115,7 @@ const ItemTable = (props: any) => {
               <TableCell align="right">Description</TableCell>
               <TableCell align="right">Importance</TableCell>
               <TableCell align="right">Completed</TableCell>
+              <TableCell align="right">Delete</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -111,6 +126,7 @@ const ItemTable = (props: any) => {
                 <TableCell align="right">{item.description}</TableCell>
                 <TableCell align="right">{item.importance}</TableCell>
                 <TableCell align="right">{item.completed ? "Yes" : "No"}</TableCell>
+                <TableCell align="right"><Button onClick={() => del(item.itemId)}>Delete</Button></TableCell>
               </TableRow>
             ))}
           </TableBody>
