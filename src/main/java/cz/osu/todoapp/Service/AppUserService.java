@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Transactional(rollbackOn = Exception.class)
 public class AppUserService {
-    private final AppUserRepo appUserRepo;
+    public final AppUserRepo appUserRepo;
 
     public ResponseEntity<String> register(RegistrationForm userDTO) {
         ResponseEntity<String> ret;
