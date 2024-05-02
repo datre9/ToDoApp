@@ -1,5 +1,6 @@
 package cz.osu.todoapp.Controller;
 
+import cz.osu.todoapp.Model.json.ItemCompleteForm;
 import cz.osu.todoapp.Model.json.ItemEditForm;
 import cz.osu.todoapp.Model.json.ItemForm;
 import cz.osu.todoapp.Model.json.ItemToken;
@@ -12,14 +13,16 @@ import org.springframework.web.bind.annotation.*;
 public class ItemController {
     private final ItemService itemService;
 
-    public ItemController(ItemService itemService) {this.itemService = itemService;}
+    public ItemController(ItemService itemService) {
+        this.itemService = itemService;
+    }
 
     @PostMapping("/create")
     public ResponseEntity<String> create(@RequestBody ItemForm itemDTO) {
         return itemService.create(itemDTO);
     }
 
-    @PostMapping ("/getall")
+    @PostMapping("/getall")
     public ResponseEntity<Object> getAll(@RequestBody ItemToken itemDTO) {
         return itemService.getAllForUser(itemDTO);
     }
@@ -32,5 +35,10 @@ public class ItemController {
     @PostMapping("/edit")
     public ResponseEntity<String> edit(@RequestBody ItemEditForm itemDTO) {
         return itemService.update(itemDTO);
+    }
+
+    @PostMapping("/complete")
+    public ResponseEntity<String> complete(@RequestBody ItemCompleteForm itemDTO) {
+        return itemService.complete(itemDTO);
     }
 }

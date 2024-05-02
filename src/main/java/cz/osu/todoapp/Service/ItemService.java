@@ -2,6 +2,7 @@ package cz.osu.todoapp.Service;
 
 import cz.osu.todoapp.Model.db.Item;
 import cz.osu.todoapp.Model.enums.Importance;
+import cz.osu.todoapp.Model.json.ItemCompleteForm;
 import cz.osu.todoapp.Model.json.ItemEditForm;
 import cz.osu.todoapp.Model.json.ItemForm;
 import cz.osu.todoapp.Model.json.ItemToken;
@@ -38,8 +39,7 @@ public class ItemService {
             itemRepo.save(item);
 
             return new ResponseEntity<>("Item save successfully", HttpStatus.OK);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return new ResponseEntity<>("Incorrect item information or format", HttpStatus.CONFLICT);
         }
     }
@@ -78,6 +78,21 @@ public class ItemService {
             item.setDescription(itemDTO.getDescription());
             item.setCompleted(false);
             item.setImportance(Importance.valueOf(itemDTO.getImportance()));
+
+            itemRepo.save(item);
+            ret = new ResponseEntity<>("Item updated successfully", HttpStatus.OK);
+        } else {
+            ret = new ResponseEntity<>("Item not found", HttpStatus.NOT_FOUND);
+        }
+        return ret;
+    }
+
+    public ResponseEntity<String> complete(ItemCompleteForm itemDTO) {
+        ResponseEntity<String> ret;
+        if (itemRepo.existsById(itemDTO.getItemID())) {
+            Item item = itemRepo.findById(itemDTO.getItemID()).get();
+
+            item.setCompleted(itemDTO.isCompleted());
 
             itemRepo.save(item);
             ret = new ResponseEntity<>("Item updated successfully", HttpStatus.OK);
