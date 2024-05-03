@@ -1,95 +1,108 @@
-import { Alert, Box, Button, TextField } from '@mui/material'
-import axios from 'axios'
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect, useRef } from 'react';
+import { Alert, Box, Button, TextField } from '@mui/material';
+import axios from 'axios';
+import { useNavigate, Link } from 'react-router-dom';
+import './Register.css';
+import todoLogo from '../images/todo-logo.png';
+import { format } from 'date-fns'; 
+import FlyingTodosContainer from './FlyingTodosContainer';
 
-const LOGIN_TOKEN_URL = "http://localhost:8080/login"
-
-const Login = (props: any) => {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-
-  const [validUsername, setValidUsername] = useState(false)
-  const [validPassword, setValidPassword] = useState(false)
-
-  const [loginButtonClicked, setLoginButtonClicked] = useState(false)
-
-  const [loginError, setLoginError] = useState("")
-
-  const [errorAlert, setErrorAlert] = useState(false)
-
-  const trueEA = () => {
-    setErrorAlert(true)
-  }
-
-  const falseEA = () => {
-    setErrorAlert(false)
-  }
-
-  useEffect(() => {
-    setValidUsername(username.length > 0)
-    setValidPassword(password.length > 0)
-  }, [username, password])
-
-  function login(e: any) {
-    falseEA()
-    e.preventDefault()
-    setLoginButtonClicked(true)
-
-    if (!validUsername || !validPassword) {
-      trueEA()
-      return
-    }
-
-    const userCredentials = {
-      username: username,
-      password: password
-    }
-
-    axios.post(LOGIN_TOKEN_URL, userCredentials)
-      .then(response => {
-        props.setUserToken(response.data)
-      })
-      .catch(error => {
-        try {
-          setLoginError(error.response.data)
-          trueEA()
-        } catch (e) {
-          setLoginError("Cannot access server")
-        }
-      })
-    setLoginButtonClicked(false)
-  }
-
-  return (
-    <div>
-      <h2>Log in</h2>
-      <form onSubmit={login}>
-        <Box>
-          <TextField label='Username' onChange={e => setUsername(e.target.value)} />
-        </Box>
-        {!validUsername && loginButtonClicked ? (
-          <Alert variant='standard' severity='error'>Username is incorrect</Alert>) : (
-          <></>
-        )}
-
-        <Box>
-          <TextField label='Password' type='password' onChange={e => setPassword(e.target.value)} />
-        </Box>
-        {!validPassword && loginButtonClicked ? (
-          <Alert variant='standard' severity='error'>Password is incorrect</Alert>) : (
-          <></>
-        )}
-        <Box>
-          <Button type='submit' variant='contained'>Log in</Button>
-        </Box>
-      </form>
-
-      <h3>Or</h3>
-      <Link to='/register'>Sign up NOW</Link>
-      {errorAlert && <Alert variant='standard' severity='error'>{loginError}</Alert>}      
-    </div>
-  )
+interface LoginProps {
+  setUserToken: (token: string) => void;
 }
 
-export default Login
+const LOGIN_TOKEN_URL = "http://localhost:8080/login";
+
+const Login: React.FC<LoginProps> = ({ setUserToken }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  const [validUsername, setValidUsername] = useState(false);
+  const [validPassword, setValidPassword] = useState(false);
+
+  const [loginButtonClicked, setLoginButtonClicked] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [responseMsg, setResponseMsg] = useState('');
+  const [successAlert, setSuccessAlert] = useState(false);
+  const [errorAlert, setErrorAlert] = useState(false);
+
+  const formRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setValidUsername(username.length > 0);
+    setValidPassword(password.length > 0);
+
+    const timerId = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timerId);
+  }, [username, password]);
+
+  function login(e: React.FormEvent<HTMLFormElement>) {
+    setErrorAlert(false);
+    setSuccessAlert(false);
+    e.preventDefault();
+    setLoginButtonClicked(true);
+
+    if (!validUsername || !validPassword) {
+      setLoginButtonClicked(false); 
+      setErrorAlert(true);
+      setLoginError('Username or password is incorrect');
+      return;
+    }
+
+    axios.post(LOGIN_TOKEN_URL, { username, password })
+      .then(response => {
+        setUserToken(response.data);
+        setResponseMsg('Login successful!');
+        setSuccessAlert(true);
+        setLoginButtonClicked(false);
+        setTimeout(() => navigate('/'), 1000);  // Přesměrování po úspěchu
+      })
+      .catch(error => {
+        const errorMessage = error.response?.data || "Cannot access server";
+        setLoginError(errorMessage);
+        setErrorAlert(true);
+        setLoginButtonClicked(false);
+      });
+  }
+
+  const handleInputChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setter(event.target.value);
+    if (loginButtonClicked) {
+      setLoginButtonClicked(false);
+    }
+  };
+
+  return (
+    <div className="register-page">
+      <FlyingTodosContainer formRef={formRef} />
+      <header className="header">
+        <div className="logo-container">
+          <img src={todoLogo} alt="ToDo Logo" className="logo" />
+        </div>
+        <div className="header-title">ToDo App</div>
+        <div className="time-display">{format(currentTime, 'PPpp')}</div>
+      </header>
+      <div className="form-container">
+        <Box className="register-container" ref={formRef}>
+          <h2>PLEASE LOG IN</h2>
+          <form onSubmit={login}>
+            <TextField fullWidth label='Username' margin="normal" onChange={handleInputChange(setUsername)} error={!validUsername && loginButtonClicked} helperText={!validUsername && loginButtonClicked ? "Username is required" : ""} />
+            <TextField fullWidth label='Password' type='password' margin="normal" onChange={handleInputChange(setPassword)} error={!validPassword && loginButtonClicked} helperText={!validPassword && loginButtonClicked ? "Password is required" : ""} />
+            <Button fullWidth type="submit"  variant='contained' sx={{ marginTop: 2, backgroundColor: '#1959b3', color: 'white', ':hover': { backgroundColor: '#303f9f' }, disabled: { backgroundColor: '#ccc', color: '#666' } }} disabled={loginButtonClicked}>Log in</Button>
+            {successAlert && <Alert severity='success'>{responseMsg} </Alert>}
+            {errorAlert && <Alert severity='error'>{loginError}</Alert>}
+          </form>
+          <h3>OR</h3>
+          <Button component={Link} to="/register" variant="contained" fullWidth sx={{ marginTop: 2, backgroundColor: '#1959b3', color: 'white', ':hover': { backgroundColor: '#303f9f' }}}>Sign up</Button>
+        </Box>
+      </div>
+    </div>
+  );
+};
+
+export default Login;

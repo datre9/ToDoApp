@@ -24,7 +24,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home user={user} setUserToken={setUserToken} />} />
         <Route path='/register' element={<Register />} />
-        <Route path='/login' element={<Login />} />
+        <Route path='/login' element={<Login setUserToken={setUserToken} />}/> 
         <Route path='/items' element={<ItemTable />} />
       </Routes>
     </div>

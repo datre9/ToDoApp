@@ -27,7 +27,7 @@ const Register: React.FC = () => {
   const [successAlert, setSuccessAlert] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
 
-  const formRef = useRef<HTMLDivElement>(null); // Reference pro registrační formulář
+  const formRef = useRef<HTMLDivElement>(null); 
 
   useEffect(() => {
     setValidUsername(username.length > 0);
@@ -52,6 +52,7 @@ const Register: React.FC = () => {
       setSignupError('Please correct passwords. Passwords do not match!');
       return;
     }
+    
 
     axios.post(SIGNUP_TOKEN_URL, { username, password })
       .then(response => {
@@ -63,8 +64,16 @@ const Register: React.FC = () => {
         const errorMessage = error.response?.data || "Cannot access registration server!";
         setSignupError(errorMessage);
         setErrorAlert(true);
+        setSignupButtonClicked(false);
       });
   }
+    
+    const handleInputChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      setter(event.target.value);
+      if (signupButtonClicked) {
+        setSignupButtonClicked(false);
+      }
+    };
   return (
     <div className="register-page">
       <FlyingTodosContainer formRef={formRef} />
