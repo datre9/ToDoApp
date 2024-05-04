@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -46,6 +47,7 @@ public class ItemService {
 
     public ResponseEntity<Object> getAllForUser(ItemToken userID) {
         List<Item> items = itemRepo.findByUserIdOrderByTimeAsc(userID.getUserId());
+        items.sort((item1, item2) -> Boolean.compare(item1.isCompleted(), item2.isCompleted()));
 
         if (items.isEmpty()) {
             return new ResponseEntity<>("User " + userID.getUserId() + " has no items or does not exist", HttpStatus.INTERNAL_SERVER_ERROR);
