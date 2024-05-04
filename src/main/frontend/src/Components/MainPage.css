@@ -1,0 +1,55 @@
+* {
+    box-sizing: border-box;
+  }
+.header {
+    
+
+    background-color: whitesmoke;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    
+  
+    justify-content: space-between; 
+    padding: 10px 20px;
+    margin-bottom: 30px; 
+  }
+  
+  .MuiContainer-root {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  
+.logo-container {
+    flex: 1; 
+  }
+  
+.header-title {
+    flex: 2; 
+    text-align: center;
+    font-size: 60px;
+    text-shadow: 2px 2px 2px rgba(0,0,0,0.99);
+  
+  }
+  
+.logo {
+    max-width: 110px; 
+    height: auto;
+    border-radius: 10px;
+  }
+  
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    flex: 1;
+    
+  }
+  
+.time-display, .user-greeting {
+    margin-bottom: 10px;
+}
+.hello{
+    font-size: 18px ;
+    font-style: oblique;
+
+}
