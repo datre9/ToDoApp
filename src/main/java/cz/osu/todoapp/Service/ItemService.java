@@ -48,6 +48,7 @@ public class ItemService {
     public ResponseEntity<Object> getAllForUser(ItemToken userID) {
         List<Item> items = itemRepo.findByUserIdOrderByTimeAsc(userID.getUserId());
         items.sort((item1, item2) -> Boolean.compare(item1.isCompleted(), item2.isCompleted()));
+        items.sort((item1, item2) -> item2.getImportance().compareTo(item1.getImportance()));
 
         if (items.isEmpty()) {
             return new ResponseEntity<>("User " + userID.getUserId() + " has no items or does not exist", HttpStatus.INTERNAL_SERVER_ERROR);
