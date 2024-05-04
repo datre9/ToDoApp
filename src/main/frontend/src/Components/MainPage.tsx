@@ -180,13 +180,13 @@ const MainPage = (props: any) => {
   }
   const importanceColor = (importance: string) => {
     switch (importance) {
-      case 'CRITICAL': return '#ffcccc';
-      case 'IMPORTANT': return '#ffecd9';
-      case 'UNIMPORTANT': return '#ffffe0';
+      case 'CRITICAL': return '#ffcccc'; 
+      case 'IMPORTANT': return '#ffffe0'; 
+      case 'UNIMPORTANT': return '#ccffcc'; 
       default: return 'none';
     }
   };
-
+  
 
   return (
 
@@ -266,9 +266,15 @@ const MainPage = (props: any) => {
 
 <TableBody>
   {items.map((item) => (
-    <TableRow key={item.itemId} sx={{ textDecoration: item.completed ? 'line-through' : 'none' }}>
+    <TableRow 
+      key={item.itemId} 
+      sx={{ 
+        textDecoration: item.completed ? 'line-through' : 'none',
+        backgroundColor: importanceColor(item.importance), 
+      }}
+    >
       <TableCell>{item.title}</TableCell>
-      <TableCell align="right">{item.time}</TableCell>
+      <TableCell align="right">{item.time.replace('T', ' ')}</TableCell>
       <TableCell align="right">{item.description}</TableCell>
       <TableCell align="right">{item.importance}</TableCell>
       <TableCell align="right">
